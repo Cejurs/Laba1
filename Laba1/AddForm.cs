@@ -14,5 +14,11 @@ namespace Laba1
         {
             this.game = game;
         }
+
+        private void AddForm_Load(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = game.GetAllProfession();
+            dataGridView2.DataSource= game.GetAllQuestion();
+        }
     }
 }

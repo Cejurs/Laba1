@@ -30,8 +30,9 @@ namespace Laba1
                 if(lastClick==false)
                 {
                     var form = new AddForm(game);
-                    form.ShowDialog();
                     this.Hide();
+                    form.Show();
+                    this.Show();
                 }
                 game.End();
                 return;

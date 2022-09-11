@@ -4,15 +4,11 @@ namespace Laba1
     public class Game
     {
         // Запоминаем вопросы где ответ был "ДА"
-        private List<int> QuestionIds;
         public bool IsOver { get; private set; }
         public Question CurentQuestion { get; private set; }
 
-        public Profession Answer { get; private set; } = null!;
-
         public Game()
         {
-            QuestionIds = new List<int>();
             CurentQuestion = FindQuestion();
             IsOver = false;
         }
@@ -35,9 +31,20 @@ namespace Laba1
             }
         }
 
+        internal object GetAllQuestion()
+        {
+            var context = new ProfessionContex();
+            return context.Questions.Local.ToBindingList();
+        }
+
+        internal object GetAllProfession()
+        {
+            var context=new ProfessionContex();
+            return context.Professions.Local.ToBindingList();
+        }
+
         internal void Yes()
         {
-            QuestionIds.Add(CurentQuestion.Id);
             MarkDropouts(true);
             CurentQuestion = FindQuestion();
 
@@ -62,11 +69,7 @@ namespace Laba1
                 foreach(var question in questions)
                 {
                     context.Entry(question).Collection(q => q.Professions).Load();
-                    var count = 0;
-                    foreach(var profession in question.Professions)
-                    {
-                        if (profession.IsUsed==false) count++;
-                    }
+                    var count = question.Professions.Where(p => p.IsUsed == false).ToList().Count();
                     if (count == question.Professions.Count) question.IsUsed = false;
                 }
                 context.SaveChanges();
