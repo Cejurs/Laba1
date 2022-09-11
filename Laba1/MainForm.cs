@@ -17,6 +17,8 @@ namespace Laba1
         private void StartGame()
         {
             game = new Game();
+            lastClick = false;
+            CheckEndGame();
             QuestionLabel.Text = game.CurentQuestion.Text;
             YesButton.Enabled = true;
             NoButton.Enabled = true;
@@ -29,10 +31,8 @@ namespace Laba1
                 NoButton.Enabled = false;
                 if(lastClick==false)
                 {
-                    var form = new AddForm(game);
-                    this.Hide();
+                    AddForm form = new AddForm(game);
                     form.Show();
-                    this.Show();
                 }
                 game.End();
                 return;
@@ -62,6 +62,12 @@ namespace Laba1
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             game.End();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var baseform = new BaseForm(game);
+            baseform.Show();
         }
     }
 }

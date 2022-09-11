@@ -3,14 +3,13 @@ namespace Laba1
 {
     public class Game
     {
-        // Запоминаем вопросы где ответ был "ДА"
         public bool IsOver { get; private set; }
         public Question CurentQuestion { get; private set; }
 
         public Game()
         {
-            CurentQuestion = FindQuestion();
             IsOver = false;
+            CurentQuestion = FindQuestion();
         }
 
         private Question FindQuestion()
@@ -34,13 +33,72 @@ namespace Laba1
         internal object GetAllQuestion()
         {
             var context = new ProfessionContex();
-            return context.Questions.Local.ToBindingList();
+            return context.Questions.ToList();
+        }
+
+        internal Profession FindProfession(int id)
+        {
+            var context = new ProfessionContex();
+            return context.Professions.Find(id);
+        }
+
+        internal void Add(string professionName, string questionText, List<int> addProfessionIds, List<int> addQuestionIds)
+        {
+            var context = new ProfessionContex();
+            var userProfession = new Profession()
+            {
+                Name = professionName,
+                IsUsed = true,
+                Questions = new List<Question>(),
+            };
+            var directQuestion = new Question()
+            {
+                Text = $"Выбранная профессия {professionName}?",
+                IsUsed = true,
+                Professions = new List<Profession>() { userProfession }
+            };
+            userProfession.Questions.Add(directQuestion);
+            var userQuestion = new Question()
+            {
+                Text = questionText,
+                IsUsed = true,
+                Professions = new List<Profession>() { userProfession },
+            };
+            if(addProfessionIds.Count!=0)
+            {
+                var professions=new List<Profession>();
+                foreach(int id in addProfessionIds)
+                {
+                    var pr = context.Professions.Find(id);
+                    professions.Add(pr);
+                }
+                userQuestion.Professions.AddRange(professions);
+            }
+            if (addQuestionIds.Count != 0)
+            {
+                var questions=new List<Question>();
+                foreach(int id in addQuestionIds)
+                {
+                    var qs=context.Questions.Find(id);
+                    questions.Add(qs);
+                }
+                userProfession.Questions.AddRange(questions);
+            }
+            context.Professions.Add(userProfession);
+            context.Questions.AddRange(directQuestion, userQuestion);
+            context.SaveChanges();
+
+        }
+
+        internal object FindQuestion(object id)
+        {
+            throw new NotImplementedException();
         }
 
         internal object GetAllProfession()
         {
             var context=new ProfessionContex();
-            return context.Professions.Local.ToBindingList();
+            return context.Professions.ToList();
         }
 
         internal void Yes()
@@ -91,6 +149,25 @@ namespace Laba1
                 context.Questions.ToList().ForEach(p => p.IsUsed = true);
                 context.SaveChanges();
             }
+        }
+
+        internal List<Tuple<string,string>> GetBase()
+        {
+            var context = new ProfessionContex();
+            var result=new List<Tuple<string,string>>();
+            var questions = context.Questions.ToList();
+            foreach(var question in questions)
+            {
+                context.Entry(question).Collection(q => q.Professions).Load();
+                var professions = "";
+                foreach(var profession in question.Professions)
+                {
+                    professions+=($"{profession.Name},");
+                }
+                result.Add(new Tuple<string,string>(question.Text, professions));
+            }
+            return result;
+
         }
     }
 }
