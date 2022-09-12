@@ -42,7 +42,7 @@
             this.YesButton.Name = "YesButton";
             this.YesButton.Size = new System.Drawing.Size(227, 99);
             this.YesButton.TabIndex = 0;
-            this.YesButton.Text = "Yes";
+            this.YesButton.Text = "Да";
             this.YesButton.UseVisualStyleBackColor = true;
             this.YesButton.Click += new System.EventHandler(this.YesButton_Click);
             // 
@@ -53,7 +53,7 @@
             this.NoButton.Name = "NoButton";
             this.NoButton.Size = new System.Drawing.Size(227, 99);
             this.NoButton.TabIndex = 1;
-            this.NoButton.Text = "No";
+            this.NoButton.Text = "Нет";
             this.NoButton.UseVisualStyleBackColor = true;
             this.NoButton.Click += new System.EventHandler(this.NoButton_Click);
             // 
@@ -64,7 +64,7 @@
             this.NewGameButton.Name = "NewGameButton";
             this.NewGameButton.Size = new System.Drawing.Size(227, 99);
             this.NewGameButton.TabIndex = 2;
-            this.NewGameButton.Text = "NewGame";
+            this.NewGameButton.Text = "Новая игра";
             this.NewGameButton.UseVisualStyleBackColor = true;
             this.NewGameButton.Click += new System.EventHandler(this.NewGameButton_Click);
             // 
@@ -85,7 +85,7 @@
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(227, 99);
             this.button1.TabIndex = 4;
-            this.button1.Text = "Base";
+            this.button1.Text = "База";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 

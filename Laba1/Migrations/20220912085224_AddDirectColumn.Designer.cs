@@ -2,6 +2,7 @@
 using Laba1;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Laba1.Migrations
 {
     [DbContext(typeof(ProfessionContex))]
-    partial class ProfessionContexModelSnapshot : ModelSnapshot
+    [Migration("20220912085224_AddDirectColumn")]
+    partial class AddDirectColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

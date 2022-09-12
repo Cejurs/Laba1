@@ -22,12 +22,16 @@ namespace Laba1
 
         private void AddForm_Load(object sender, EventArgs e)
         {
-            dataGridView1.DataSource = game.GetAllProfession();
-            dataGridView2.DataSource= game.GetAllQuestion();
+            var datasourse1= game.GetAllProfession();
+            var datasourse2= game.GetQuestionsWithoutDirect();
+            if(datasourse1==null || datasourse2==null) this.Close();
+            dataGridView1.DataSource = datasourse1;
+            dataGridView2.DataSource= datasourse2;
             dataGridView1.Columns["Id"].Visible = false;
             dataGridView1.Columns["IsUsed"].Visible = false;
             dataGridView2.Columns["Id"].Visible = false;
             dataGridView2.Columns["IsUsed"].Visible = false;
+            dataGridView2.Columns["IsDirectQuestion"].Visible = false;
         }
 
         private void dataGridView1_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

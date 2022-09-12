@@ -1,0 +1,4 @@
+﻿[*.cs]
+
+# CS0169: Поле "AddForm.isUsedDataGridViewCheckBoxColumn1" никогда не используется.
+dotnet_diagnostic.CS0169.severity = warning

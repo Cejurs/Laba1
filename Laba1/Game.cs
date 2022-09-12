@@ -14,13 +14,13 @@ namespace Laba1
 
         private Question FindQuestion()
         {
-            using (var context = new ProfessionContex())
+            try
             {
-                var question=context.Questions.Where(p => p.IsUsed == true)
-                    .OrderByDescending(p => p.Professions.Count).FirstOrDefault();
-                if(question == null)
+                var context = new ProfessionContex();
+                var question = context.Questions.Where(p => p.IsUsed == true)
+                        .OrderByDescending(p => p.Professions.Count).FirstOrDefault();
+                if (question == null)
                 {
-
                     IsOver = true;
                     return null;
                 }
@@ -28,86 +28,125 @@ namespace Laba1
                 context.SaveChanges();
                 return question;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,"Error");
+                return null;
+            }
         }
 
-        internal object GetAllQuestion()
+        internal object GetQuestionsWithoutDirect()
         {
-            var context = new ProfessionContex();
-            return context.Questions.ToList();
+            try
+            {
+                var context = new ProfessionContex();
+                return context.Questions.Where(q => q.IsDirectQuestion == false).ToList();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         internal Profession FindProfession(int id)
         {
-            var context = new ProfessionContex();
-            return context.Professions.Find(id);
+            try
+            {
+                var context = new ProfessionContex();
+                return context.Professions.Find(id);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         internal void Add(string professionName, string questionText, List<int> addProfessionIds, List<int> addQuestionIds)
         {
-            var context = new ProfessionContex();
-            var userProfession = new Profession()
+            try
             {
-                Name = professionName,
-                IsUsed = true,
-                Questions = new List<Question>(),
-            };
-            var directQuestion = new Question()
-            {
-                Text = $"Выбранная профессия {professionName}?",
-                IsUsed = true,
-                Professions = new List<Profession>() { userProfession }
-            };
-            userProfession.Questions.Add(directQuestion);
-            var userQuestion = new Question()
-            {
-                Text = questionText,
-                IsUsed = true,
-                Professions = new List<Profession>() { userProfession },
-            };
-            if(addProfessionIds.Count!=0)
-            {
-                var professions=new List<Profession>();
-                foreach(int id in addProfessionIds)
+                var context = new ProfessionContex();
+                var userProfession = new Profession()
                 {
-                    var pr = context.Professions.Find(id);
-                    professions.Add(pr);
-                }
-                userQuestion.Professions.AddRange(professions);
-            }
-            if (addQuestionIds.Count != 0)
-            {
-                var questions=new List<Question>();
-                foreach(int id in addQuestionIds)
+                    Name = professionName,
+                    IsUsed = true,
+                    Questions = new List<Question>(),
+                };
+                var userQuestion = new Question()
                 {
-                    var qs=context.Questions.Find(id);
-                    questions.Add(qs);
+                    Text = questionText,
+                    IsUsed = true,
+                    Professions = new List<Profession>() { userProfession },
+                };
+                var directQuestion = new Question()
+                {
+                    Text = $"Выбранная профессия {professionName}?",
+                    IsUsed = true,
+                    Professions = new List<Profession>() { userProfession },
+                    IsDirectQuestion = true,
+
+                };
+                userProfession.Questions.Add(directQuestion);
+                if (addProfessionIds.Count != 0)
+                {
+                    var professions = new List<Profession>();
+                    foreach (int id in addProfessionIds)
+                    {
+                        var pr = context.Professions.Find(id);
+                        professions.Add(pr);
+                    }
+                    userQuestion.Professions.AddRange(professions);
                 }
-                userProfession.Questions.AddRange(questions);
+                if (addQuestionIds.Count != 0)
+                {
+                    var questions = new List<Question>();
+                    foreach (int id in addQuestionIds)
+                    {
+                        var qs = context.Questions.Find(id);
+                        questions.Add(qs);
+                    }
+                    userProfession.Questions.AddRange(questions);
+                }
+                context.Professions.Add(userProfession);
+                context.Questions.AddRange(directQuestion, userQuestion);
+                context.SaveChanges();
             }
-            context.Professions.Add(userProfession);
-            context.Questions.AddRange(directQuestion, userQuestion);
-            context.SaveChanges();
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+           
 
-        }
-
-        internal object FindQuestion(object id)
-        {
-            throw new NotImplementedException();
         }
 
         internal object GetAllProfession()
         {
-            var context=new ProfessionContex();
-            return context.Professions.ToList();
+            try
+            {
+                var context = new ProfessionContex();
+                return context.Professions.ToList();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
         }
 
         internal void Yes()
         {
+            if (CurentQuestion.IsDirectQuestion)
+            {
+                IsOver=true;
+            }
             MarkDropouts(true);
             CurentQuestion = FindQuestion();
 
         }
         // Помечаем выбывшие вопросы и профессии
+        // Производительность вышла из чата
         private void MarkDropouts(bool x)
         {
             using (var context = new ProfessionContex())
@@ -143,30 +182,43 @@ namespace Laba1
 
         internal void End()
         {
-            using(var context=new ProfessionContex())
+            try
             {
+                var context = new ProfessionContex();
                 context.Professions.ToList().ForEach(p => p.IsUsed = true);
                 context.Questions.ToList().ForEach(p => p.IsUsed = true);
                 context.SaveChanges();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
             }
         }
 
         internal List<Tuple<string,string>> GetBase()
         {
-            var context = new ProfessionContex();
-            var result=new List<Tuple<string,string>>();
-            var questions = context.Questions.ToList();
-            foreach(var question in questions)
+            try
             {
-                context.Entry(question).Collection(q => q.Professions).Load();
-                var professions = "";
-                foreach(var profession in question.Professions)
+                var context = new ProfessionContex();
+                var result = new List<Tuple<string, string>>();
+                var questions = context.Questions.ToList();
+                foreach (var question in questions)
                 {
-                    professions+=($"{profession.Name},");
+                    context.Entry(question).Collection(q => q.Professions).Load();
+                    var professions = "";
+                    foreach (var profession in question.Professions)
+                    {
+                        professions += ($"{profession.Name},");
+                    }
+                    result.Add(new Tuple<string, string>(question.Text, professions));
                 }
-                result.Add(new Tuple<string,string>(question.Text, professions));
+                return result;
             }
-            return result;
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return null;
+            }
 
         }
     }

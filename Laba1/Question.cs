@@ -1,6 +1,4 @@
 ﻿
-using System.ComponentModel.DataAnnotations;
-
 namespace Laba1
 {
     public class Question
@@ -8,8 +6,9 @@ namespace Laba1
         public int Id { get; set; }
         public string Text { get; set; }
         public bool IsUsed { get; set; }
-        public virtual List<Profession> Professions { get; set; }
 
+        public bool IsDirectQuestion { get; set; }
+        public virtual List<Profession> Professions { get; set; }
 
     }
 }

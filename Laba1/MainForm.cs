@@ -7,6 +7,7 @@ namespace Laba1
         public MainForm()
         {
             InitializeComponent();
+            game = new Game();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -16,12 +17,10 @@ namespace Laba1
 
         private void StartGame()
         {
-            game = new Game();
             lastClick = false;
-            CheckEndGame();
-            QuestionLabel.Text = game.CurentQuestion.Text;
             YesButton.Enabled = true;
             NoButton.Enabled = true;
+            CheckEndGame();
         }
         private void CheckEndGame()
         {
@@ -35,9 +34,13 @@ namespace Laba1
                     form.Show();
                 }
                 game.End();
+                if (lastClick) MessageBox.Show("Профессия отгадана");
                 return;
             }
-            QuestionLabel.Text=game.CurentQuestion.Text;
+            if (game.CurentQuestion != null)
+            {
+                QuestionLabel.Text = game.CurentQuestion.Text;
+            }
         }
         private void YesButton_Click(object sender, EventArgs e)
         {
