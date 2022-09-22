@@ -1,12 +1,20 @@
 ﻿
+using System.Text;
+
 namespace Laba1
 {
     public class Game
     {
         public bool IsOver { get; private set; }
         public Question CurentQuestion { get; private set; }
+        public List<Tuple<string, string>> Analisis { get; private set; }
 
         public Game()
+        {
+            Analisis = new List<Tuple<string, string>>();   
+        }
+
+        public void Start()
         {
             IsOver = false;
             CurentQuestion = FindQuestion();
@@ -24,6 +32,7 @@ namespace Laba1
                     IsOver = true;
                     return null;
                 }
+                context.Entry(question).Collection(c => c.Professions).Load();
                 question.IsUsed = false;
                 context.SaveChanges();
                 return question;
@@ -63,7 +72,7 @@ namespace Laba1
             }
         }
 
-        internal void Add(string professionName, string questionText, List<int> addProfessionIds, List<int> addQuestionIds)
+        internal void Add(string professionName, List<int> addProfessionIds, List<int> addQuestionIds,string questionText=null)
         {
             try
             {
@@ -74,12 +83,26 @@ namespace Laba1
                     IsUsed = true,
                     Questions = new List<Question>(),
                 };
-                var userQuestion = new Question()
+                if (questionText != null) 
                 {
-                    Text = questionText,
-                    IsUsed = true,
-                    Professions = new List<Profession>() { userProfession },
-                };
+                    var userQuestion = new Question()
+                    {
+                        Text = questionText,
+                        IsUsed = true,
+                        Professions = new List<Profession>() { userProfession },
+                    };
+                    if (addProfessionIds.Count != 0)
+                    {
+                        var professions = new List<Profession>();
+                        foreach (int id in addProfessionIds)
+                        {
+                            var pr = context.Professions.Find(id);
+                            professions.Add(pr);
+                        }
+                        userQuestion.Professions.AddRange(professions);
+                    }
+                    context.Questions.Add(userQuestion);
+                }
                 var directQuestion = new Question()
                 {
                     Text = $"Выбранная профессия {professionName}?",
@@ -89,16 +112,6 @@ namespace Laba1
 
                 };
                 userProfession.Questions.Add(directQuestion);
-                if (addProfessionIds.Count != 0)
-                {
-                    var professions = new List<Profession>();
-                    foreach (int id in addProfessionIds)
-                    {
-                        var pr = context.Professions.Find(id);
-                        professions.Add(pr);
-                    }
-                    userQuestion.Professions.AddRange(professions);
-                }
                 if (addQuestionIds.Count != 0)
                 {
                     var questions = new List<Question>();
@@ -110,7 +123,7 @@ namespace Laba1
                     userProfession.Questions.AddRange(questions);
                 }
                 context.Professions.Add(userProfession);
-                context.Questions.AddRange(directQuestion, userQuestion);
+                context.Questions.Add(directQuestion);
                 context.SaveChanges();
             }
             catch(Exception ex)
@@ -135,12 +148,29 @@ namespace Laba1
             }
         }
 
+        private void WriteAnalis(bool x)
+        {
+            var str = new StringBuilder();
+            if (x)
+            {
+                str.Append(" Вы ответили да.Профессии:");
+                CurentQuestion.Professions.Select(x => x.Name).ToList().ForEach(p => str.Append($"{p},"));
+            }
+            else
+            {
+                str.Append(" Вы ответили нет.Выбывшие профессии:");
+                CurentQuestion.Professions.Select(x => x.Name).ToList().ForEach(p => str.Append($"{p},"));
+            }
+
+            Analisis.Add(new Tuple<string, string>(CurentQuestion.Text, str.ToString()));
+        }
         internal void Yes()
         {
             if (CurentQuestion.IsDirectQuestion)
             {
                 IsOver=true;
             }
+            WriteAnalis(true);
             MarkDropouts(true);
             CurentQuestion = FindQuestion();
 
@@ -176,12 +206,15 @@ namespace Laba1
         internal void No()
         {
             MarkDropouts(false);
+            WriteAnalis(false);
             CurentQuestion = FindQuestion();
 
         }
 
         internal void End()
         {
+            IsOver=false;
+            Analisis.Clear();
             try
             {
                 var context = new ProfessionContex();

@@ -20,6 +20,7 @@ namespace Laba1
             lastClick = false;
             YesButton.Enabled = true;
             NoButton.Enabled = true;
+            game.Start();
             CheckEndGame();
         }
         private void CheckEndGame()
@@ -30,11 +31,16 @@ namespace Laba1
                 NoButton.Enabled = false;
                 if(lastClick==false)
                 {
-                    AddForm form = new AddForm(game);
+                    AddForm form = new AddForm(game,this);
                     form.Show();
+                    this.Hide();
                 }
-                game.End();
-                if (lastClick) MessageBox.Show("Профессия отгадана");
+                else
+                {
+                    FinalForm form = new FinalForm(game,this);
+                    form.Show();
+                    this.Hide();
+                }
                 return;
             }
             if (game.CurentQuestion != null)

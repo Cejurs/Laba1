@@ -90,9 +90,9 @@
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label3.Location = new System.Drawing.Point(29, 176);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(158, 28);
+            this.label3.Size = new System.Drawing.Size(439, 28);
             this.label3.TabIndex = 4;
-            this.label3.Text = "Введите вопрос";
+            this.label3.Text = "Введите вопрос или выберите из списка ниже";
             // 
             // dataGridView1
             // 
@@ -238,6 +238,7 @@
             this.Controls.Add(this.label1);
             this.Name = "AddForm";
             this.Text = "AddForm";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AddForm_FormClosed);
             this.Load += new System.EventHandler(this.AddForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
@@ -258,8 +259,6 @@
         private DataGridView dataGridView1;
         private DataGridView dataGridView2;
         private Button button1;
-        private BindingSource professionBindingSource;
-        private BindingSource questionsBindingSource;
         private DataGridViewTextBoxColumn idDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
         private DataGridViewCheckBoxColumn isUsedDataGridViewCheckBoxColumn;

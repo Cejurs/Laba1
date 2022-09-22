@@ -8,15 +8,16 @@ namespace Laba1
         private Game game;
         private List<int> addProfessionIds;
         private List<int> addQuestionIds;
+        private MainForm parent;
 
 
-        public AddForm(Game game)
+        public AddForm(Game game,MainForm parent)
         {
             InitializeComponent();
             this.game = game;
             addProfessionIds = new List<int>();
             addQuestionIds = new List<int>();
-            
+            this.parent=parent;
         }
 
 
@@ -89,13 +90,25 @@ namespace Laba1
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            if (Answer.Text == "" && Question.Text == "")
+            if (Answer.Text == "")
             {
-                MessageBox.Show("Не введены значения в поля");
+                MessageBox.Show("Не введены значение в поле вопрос");
                 return;
             }
-            game.Add(Answer.Text, Question.Text, addProfessionIds, addQuestionIds);
+            if (Question.Text == "" && addQuestionIds.Count == 0  )
+            {
+                MessageBox.Show("Введите или выберите вопрос(ы)");
+                return;
+            }
+            if (Question.Text == "") game.Add(Answer.Text, addProfessionIds, addQuestionIds);
+            else game.Add(Answer.Text, addProfessionIds, addQuestionIds, Question.Text);
             this.Close();
+        }
+
+        private void AddForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            game.End();
+            parent.Show();
         }
     }
 }
